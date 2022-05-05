@@ -1,0 +1,1 @@
+# Exact-Solutions-of-Quantum-Spin-Systems-under-Arbitrary-Waveforms
