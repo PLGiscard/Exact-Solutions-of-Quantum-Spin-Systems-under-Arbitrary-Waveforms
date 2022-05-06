@@ -5,7 +5,7 @@ function [rho,elapsedTime] = one_spin_ODE(para,TMAX,NT,tol)
 % NT : number of numerical evalutation points 
 % tol : relative accuracy required
 
-options = odeset('RelTol',tol);
+options = odeset('RelTol',tol,'AbsTol',tol);
 
 tic;
 

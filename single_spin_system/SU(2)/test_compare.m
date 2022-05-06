@@ -6,40 +6,42 @@
 clear all
 close all
 
+
 % para = paragen(Omega,alpha,DeltaF,taup,Phi0,deltat,deltaf,n);
-para = paragen(2*pi*1000,180,100,0.001,0,0.0005,0,30);
+para = paragen(2*pi*1000,180,100000,0.001,0,0.0005,0,30);
 TMAX = 0.001; % Max simulation time, in s
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ODE45 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-NT_ME = 200; % Set the number of points to be used by Zassenhaus
-tol = 1e-13; % Relative tolerance for ode45
+NT_PCPA = 500; % Set the number of points to be used for the ode45 
+               % reference solution and for PCPA (piecewise-constant propagator approximation)
+tol = 1e-13;   % Relative and absolute tolerance for reference solution by ode45
 
 figure;
 sgtitle('Propagation via ODE45')
 
-% One additional time point must be added to Zassenhaus and ode45 methods 
+% One additional time point must be added to PCPA and ode45 methods 
 % to run comparisons at identical time points with PS Trap and PS Simp
-[rho_ODE,elapsedTime_ODE] = one_spin_ODE(para,TMAX,NT_ME+1,tol);
+[rho_ODE,elapsedTime_ODE] = one_spin_ODE(para,TMAX,NT_PCPA+1,tol);
 fprintf('\n %s Finished in %5.3f seconds, Tolerance  = %e\n', 'ODE45', elapsedTime_ODE, tol);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ZASSENHAUS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PCPA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 figure;
-sgtitle('Propagation via Matrix Exponential')
+sgtitle('Propagation via PCPA')
 
-[rho_ME,elapsedTime_ME] = one_spin_ME(para,TMAX,NT_ME+1);
-fprintf('\n %s Finished in %5.3f seconds, NT = %i', 'Zassenhaus', elapsedTime_ME, NT_ME);
+[rho_PCPA,elapsedTime_PCPA] = one_spin_PCPA(para,TMAX,NT_PCPA+1);
+fprintf('\n %s Finished in %5.3f seconds, NT = %i', 'PCPA', elapsedTime_PCPA, NT_PCPA);
 
 % Compute the relative error on the Frobenius scalar product between
 % density matrices
-f=plotfrob(rho_ME,rho_ODE);
-fprintf('\n Average Frobenius accuracy of %s : %e\n\n', 'Zassenhaus', sum(f)./length(f))
+f=plotfrob(rho_PCPA,rho_ODE);
+fprintf('\n Average Frobenius accuracy of %s : %e\n\n', 'PCPA', sum(f)./length(f))
 figure
-sgtitle('Frobenius accuracy of Zassenhaus expansion')
+sgtitle('Frobenius accuracy of PCPA')
 plot(1:length(f),real(f),'k')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PATH-SUMS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-NPrec = 200; % Number of points per path-sum interval
+NPrec = 500; % Number of points per path-sum interval
 NInt = 1; % Number of time sub-intervals
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% SIMPSON QUADRATURE %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -51,7 +53,7 @@ fprintf('\n %s Finished in %5.3f seconds, NPrec = %i, NInt = %i', 'Path Sum Simp
 
 % Compute the relative error on the Frobenius scalar product between
 % density matrices
-if NT_ME==NInt*NPrec
+if NT_PCPA==NInt*NPrec
     f=plotfrob(rho_PS_SIMP,rho_ODE);
     fprintf('\n Average Frobenius accuracy of %s : %e\n\n', 'Path Sum Simpson', sum(f)./length(f))
     figure
@@ -70,7 +72,7 @@ fprintf('\n %s Finished in %5.3f seconds, NPrec = %i, NInt = %i', 'Path Sum Trap
 
 % Compute the relative error on the Frobenius scalar product between
 % density matrices
-if NT_ME==NInt*NPrec
+if NT_PCPA==NInt*NPrec
     f=plotfrob(rho_PS_TRAP,rho_ODE);
     fprintf('\n Average Frobenius accuracy of %s : %e\n\n', 'Path Sum Trapezoidal', sum(f)./length(f))
     figure

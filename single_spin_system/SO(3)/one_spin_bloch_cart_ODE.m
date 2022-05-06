@@ -8,7 +8,7 @@ function [rho,t,elapsedTime] = one_spin_bloch_cart_ODE(para,TMAX,NT,tol,rho0)
 
 tspan = linspace(0,TMAX,NT);
 
-options = odeset('RelTol',tol);
+options = odeset('RelTol',tol,'AbsTol',tol);
 
 tic;
 
