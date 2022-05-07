@@ -1,4 +1,4 @@
-# Exact Solutions for the Time-evolution of Quantum Spin Systems under Arbitrary Waveforms Using Algebraic Graph Theory
+# Exact solutions for the time-evolution of quantum spin systems under arbitrary waveforms using algebraic graph theory
 
 M. Foroozandeh, P.-L. Giscard, 04/2022
 
